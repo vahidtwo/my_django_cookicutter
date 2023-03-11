@@ -6,11 +6,6 @@ from core.models.user import AbstractUser
 
 class User(AbstractUser):
     """User model
-    phone number is required and must be unique
-    role represent that's for example user is developer or project manager or etc
-    skill represents that's which related role-skill user has
-    if user phone number has been changed the is_phone_number_approve change to False
-    this model has two cached properties for bio and wallet that's related to user instance
     """
 
 
