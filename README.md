@@ -8,7 +8,7 @@ pip install cookiecutter
 
 setup the project
 ```
-cookiecutter git@gitssh.bernetco.ir:vahidtwo/cookiecutter.git
+cookiecutter git@github.com:vahidtwo/my_django_cookicutter.git
 ```
 
 
