@@ -131,11 +131,10 @@ TODO.md
 base_requirements.txt
 *.pyc
 *~
-/.vscode
-.idea
+.vscode/
+.idea/
 myvenv
 venv
 .DS_Store
 media
 git.help
-/.idea
