@@ -85,8 +85,6 @@ class OTPMixin(models.Model):
         Check Otp Method
         returns Bool object
         """
-        if value == "6666":
-            return True  # TODO change it when kavenegar add to project
         otp = self.get_otp()
         return otp == value
         # if otp is not None:
