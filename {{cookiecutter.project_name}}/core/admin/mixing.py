@@ -10,3 +10,13 @@ class LogoAdminMixing:
 
     def get_list_display(self, request):
         return self.list_display + ("thumb",)
+
+
+class IconAdminMixing:
+    def thumb(self, obj):
+        return link_image(obj.icon) if obj.icon else None
+
+    thumb.short_description = _("icon")
+
+    def get_list_display(self, request):
+        return self.list_display + ("thumb",)

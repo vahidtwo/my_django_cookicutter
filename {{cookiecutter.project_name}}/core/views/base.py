@@ -6,12 +6,11 @@ Author: mehrab <mehrabox@gmail.com>
 """
 
 import asyncio
-from functools import update_wrapper
+
 from django.db.models import QuerySet
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import classonlymethod
-from rest_framework.settings import api_settings
 from rest_framework import viewsets
+from rest_framework.serializers import Serializer
+from rest_framework.settings import api_settings
 
 from . import mixins
 
@@ -71,7 +70,7 @@ class BaseView(BaseModelViewSet):
 
     lookup_field = "id"
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Serializer | NotImplementedError:
         if getattr(self, "serializer_class", None):
             return self.serializer_class
 

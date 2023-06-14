@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx:python3.10
+FROM tiangolo/uwsgi-nginx:python3.11
 
 ENV NGINX_MAX_UPLOAD 16m
 ENV LISTEN_PORT 8000
@@ -23,6 +23,7 @@ WORKDIR /app
 
 
 COPY requirements.txt /app/
+COPY requirements /app/requirements
 RUN pip install -r requirements.txt
 
 COPY prestart.sh /app/prestart.sh

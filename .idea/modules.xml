@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/../../bernet/bernet-backend/.idea/bernet-backend.iml" filepath="$PROJECT_DIR$/../../bernet/bernet-backend/.idea/bernet-backend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/my_django_style_guide.iml" filepath="$PROJECT_DIR$/.idea/my_django_style_guide.iml" />
-    </modules>
-  </component>
-</project>

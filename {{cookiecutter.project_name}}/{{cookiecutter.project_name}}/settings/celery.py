@@ -1,17 +1,12 @@
-from config.env import env
+from {{cookiecutter.project_name}}.env import env
 
 # https://docs.celeryproject.org/en/stable/userguide/configuration.html
-
-
-CELERY_TIMEZONE = "fa_IR"
-
+# celery Conf
 CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}/2"
 CELERY_RESULT_BACKEND = f"redis://{env('REDIS_HOST')}"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
-CELERY_BEAT_SCHEDULE = {
-    # "calculate_due_date": {
-    #     "task": "apps.infra.tasks.calculate_due_date",
-    #     "schedule": crontab(hour=2),
-    # }
-}
+
+CELERY_TASK_SOFT_TIME_LIMIT = 20  # seconds
+CELERY_TASK_TIME_LIMIT = 30  # seconds
+CELERY_TASK_MAX_RETRIES = 3

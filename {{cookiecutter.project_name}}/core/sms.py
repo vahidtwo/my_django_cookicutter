@@ -1,6 +1,7 @@
+import logging
+
 from django.conf import settings
 from kavenegar import KavenegarAPI, APIException, HTTPException
-import json
 
 
 def send_sms():
@@ -20,6 +21,9 @@ def sms_character_replace(text):
 
 def send_sms_template(phone_number, template, **kwargs):
     api = KavenegarAPI(settings.KAVENEGAR_AUTH_TOKEN)
+
+    logger = logging.getLogger("django")
+
     for key, value in kwargs.items():
         if key.startswith("token"):
             kwargs[key] = sms_character_replace(value)
@@ -32,11 +36,11 @@ def send_sms_template(phone_number, template, **kwargs):
     }
     try:
         response = api.verify_lookup(params)
-        print(str(response))  # todo add logger
+        logger.info(str(response))
         return response
     except APIException as api_exception:
-        print(str(api_exception))  # todo add logger
-        return api_exception
+        logger.error(api_exception.args[0].decode("utf-8"))
+        raise api_exception
     except HTTPException as http_exception:
-        print(str(http_exception))  # todo add logger
-        return http_exception
+        logger.error(http_exception.args[0].decode("utf-8"))
+        raise http_exception

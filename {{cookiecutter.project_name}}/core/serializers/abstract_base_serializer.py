@@ -1,3 +1,6 @@
+from rest_framework import fields
+
+
 class AbstractBaseSerializer:
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop("fields", None)
@@ -19,3 +22,8 @@ class AbstractBaseSerializer:
             if value != getattr(self.instance, field, None):
                 changed_data.append(field)
         return changed_data
+
+    def build_property_field(self, field_name, model_class):
+        if field_name == "jalali_created_at":
+            return fields.DateTimeField, {"read_only": True}
+        return super().build_property_field(field_name, model_class)

@@ -107,7 +107,7 @@ class EmailVerifyMixin(models.Model):
         - check_code: check code value with hashed code in memcache
     """
 
-    code_length = 8
+    code_length = 5
 
     class Meta:
         abstract = True
@@ -140,25 +140,3 @@ class EmailVerifyMixin(models.Model):
         Returns assigned otp value
         """
         return cache.get(self.__key)
-
-
-class AnnouncementSettingMixin(models.Model):
-    email_announce = models.BooleanField(default=False, verbose_name=_("email announce"))
-    notification_announce = models.BooleanField(default=False, verbose_name=_("notification announce"))
-    sms_announce = models.BooleanField(default=False, verbose_name=_("sms announce"))
-    phonecall_announce = models.BooleanField(default=False, verbose_name=_("phonecall announce"))
-
-    def can_send_email(self):
-        return self.email_announce
-
-    def can_send_notification(self):
-        return self.notification_announce
-
-    def can_send_sms(self):
-        return self.sms_announce
-
-    def can_send_phonecall(self):
-        return self.phonecall_announce
-
-    class Meta:
-        abstract = True

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser as DjangoAbstractUser
+from django.contrib.auth.models import PermissionsMixin, AbstractUser as DjangoAbstractUser
 from django.utils.translation import gettext_lazy as _
 
 from core.managers import UserManager

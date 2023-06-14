@@ -9,8 +9,6 @@ class User(AbstractUser):
     """
 
 
-    ICON: str = "Person"
-
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

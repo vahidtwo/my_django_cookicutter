@@ -4,13 +4,9 @@
 
   "first_name":"author",
   "last_name":"author lastname",
-
-  "license": ["MIT", "BEER", "None"],
-
+  "email": "test@test.com",
   "postgres_user": "user",
   "postgres_password": "password",
-
-  "use_jwt": "n",
 
   "_copy_without_render": [
         "markdown_tools/*",

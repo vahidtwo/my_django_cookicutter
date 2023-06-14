@@ -27,10 +27,6 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 cp .env.example .env
 ```
-5.1
-```
-./scripts/bootstrap {postgress_username}
-```
 
 6- Create tables
 ```

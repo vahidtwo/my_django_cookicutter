@@ -2,8 +2,6 @@ import os
 import shutil
 
 
-lisence = "{{cookiecutter.license}}"
-jwt = "{{cookiecutter.use_jwt}}"
 project_slug = "{{cookiecutter.project_slug}}"
 
 def delete_resource(resource):
@@ -15,9 +13,5 @@ def delete_resource(resource):
         shutil.rmtree(resource)
 
 
-if lisence == "None":
-    delete_resource("LICENSE")
-if jwt == "n":
-    delete_resource(f"config/settings/jwt")
 
 

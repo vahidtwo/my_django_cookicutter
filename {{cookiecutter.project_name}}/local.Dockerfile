@@ -1,15 +1,23 @@
-# This docker file is used for local development via docker-compose
-# Creating image based on official python3 image
-FROM python:3.10
+FROM tiangolo/uwsgi-nginx:python3.11
 
-# Fix python printing
-ENV PYTHONUNBUFFERED 1
+ENV NGINX_MAX_UPLOAD 16m
+ENV LISTEN_PORT 8000
+ENV UWSGI_CHEAPER 4
+ENV UWSGI_PROCESSES 32
+ENV NGINX_WORKER_PROCESSES 2
+ENV UWSGI_INI /app/uwsgi.ini
 
-# Installing all python dependencies
-ADD requirements/ requirements/
-RUN pip install -r requirements/local.txt
 
-# Get the django project into the docker container
-RUN mkdir /app
+
+COPY custom-nginx.conf /etc/nginx/conf.d/custom.conf
 WORKDIR /app
-ADD ./ /app/
+
+
+COPY requirements.txt /app/
+COPY requirements /app/requirements
+RUN pip install -r requirements.txt
+
+COPY prestart.sh /app/prestart.sh
+COPY uwsgi.ini /app/uwsgi.ini
+
+COPY . /app

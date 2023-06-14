@@ -25,7 +25,7 @@ def get_client_user_agent(request):
 
 class APIError(APIException):
     status_code = 406
-    default_detail = "Not Acceptable."
+    default_detail = choice.GENERAL_API_ERROR_MSG
     default_code = choice.RESPONSE_CODE_FAILED
 
     def __init__(self, detail=None, code=None, status_code=None):
