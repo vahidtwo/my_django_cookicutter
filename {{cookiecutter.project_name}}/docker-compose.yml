@@ -43,7 +43,8 @@ services:
       - {{cookiecutter.project_name}}
       - traefik-public
     environment:
-      - DEBUG=on
+      - DEBUG=off
+      - SERVE_STRATEGY=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
@@ -55,7 +56,6 @@ services:
       - EMAIL_USE_TLS=${EMAIL_USE_TLS}
       - REDIS_HOST={{cookiecutter.project_name}}-redis
       - CCREMAILS=${CCREMAILS}
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
       - ADMINS_MOBILE_NUMBER=${STG_ADMIN_MOBILE_NUMBER}
     labels:
       - "ccr.receivers=${CCREMAILS}"
@@ -70,17 +70,17 @@ services:
         order: start-first
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.{{cookiecutter.project_name}}-staging.rule=Host(`{{cookiecutter.project_name}}.bernetco.ir`)"
-        - "traefik.http.routers.{{cookiecutter.project_name}}-staging.entrypoints=websecure"
-        - "traefik.http.routers.{{cookiecutter.project_name}}-staging.tls.certresolver=letsencryptresolver"
-        - "traefik.http.services.{{cookiecutter.project_name}}-staging.loadbalancer.server.port=8000"
+        - "traefik.http.routers.{{cookiecutter.project_name}}.rule=Host(`{{cookiecutter.project_name}}.bernetco.ir`)"
+        - "traefik.http.routers.{{cookiecutter.project_name}}.entrypoints=websecure"
+        - "traefik.http.routers.{{cookiecutter.project_name}}.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.{{cookiecutter.project_name}}.loadbalancer.server.port=8000"
 
   {{cookiecutter.project_name}}-celery:
     image: reg.bernetco.ir/{{cookiecutter.project_name}}:staging
     command: celery -A {{cookiecutter.project_name}}.celery worker -l info --pidfile="celeryworker.pid"
     environment:
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
-      - DEBUG=on
+      - DEBUG=off
+      - SERVE_STRATEGY=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
@@ -107,8 +107,8 @@ services:
     image: reg.bernetco.ir/{{cookiecutter.project_name}}:staging
     command: celery -A {{cookiecutter.project_name}}.celery beat -l info
     environment:
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
-      - DEBUG=on
+      - DEBUG=off
+      - SERVE_STRATEGY=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient

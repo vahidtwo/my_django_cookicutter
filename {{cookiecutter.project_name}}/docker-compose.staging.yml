@@ -44,6 +44,7 @@ services:
       - traefik-public
     environment:
       - DEBUG=on
+      - SERVE_STRATEGY=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
@@ -55,7 +56,6 @@ services:
       - EMAIL_USE_TLS=${EMAIL_USE_TLS}
       - REDIS_HOST={{cookiecutter.project_name}}-redis
       - CCREMAILS=${CCREMAILS}
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
       - ADMINS_MOBILE_NUMBER=${STG_ADMIN_MOBILE_NUMBER}
     labels:
       - "ccr.receivers=${CCREMAILS}"
@@ -79,9 +79,9 @@ services:
     image: reg.bernetco.ir/{{cookiecutter.project_name}}:staging
     command: celery -A {{cookiecutter.project_name}}.celery worker -l info --pidfile="celeryworker.pid"
     environment:
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
       - DEBUG=on
       - SECRET_KEY=${SECRET_KEY}
+      - SERVE_STRATEGY=production
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
       - KAVENEGAR_AUTH_TOKEN=${KAVENEGAR_AUTH_TOKEN}
@@ -107,8 +107,8 @@ services:
     image: reg.bernetco.ir/{{cookiecutter.project_name}}:staging
     command: celery -A {{cookiecutter.project_name}}.celery beat -l info
     environment:
-      - DJANGO_SETTINGS_MODULE={{cookiecutter.project_name}}.production
       - DEBUG=on
+      - SERVE_STRATEGY=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
