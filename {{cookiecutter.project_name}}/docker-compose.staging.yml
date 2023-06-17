@@ -10,6 +10,19 @@ volumes:
   {{cookiecutter.project_name}}-static.vol:
   {{cookiecutter.project_name}}-db-data.vol:
 
+{% if cookiecutter.use_elastic %}
+configs:
+  elastic_config:
+    file: ./elk-config-stg/elasticsearch.yml
+  logstash_config:
+    file: ./elk-config-stg/logstash.yml
+  logstash_pipeline:
+    file: ./elk-config-stg/logstash.conf
+  kibana_config:
+    file: ./elk-config-stg/kibana.yml
+  filebeat_config:
+    file: ./elk-config-stg/filebeat.yml
+{% endif %}
 
 services:
   {{cookiecutter.project_name}}-db:
@@ -48,7 +61,9 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@{{cookiecutter.project_name}}-db:5432/${POSTGRES_DB}
       - CACHE_URL=rediscache://redis:6379/1?client_class=django_redis.client.DefaultClient
+      {% if cookiecutter.use_kavenegar %}
       - KAVENEGAR_AUTH_TOKEN=${KAVENEGAR_AUTH_TOKEN}
+      {% endif %}
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
@@ -74,7 +89,7 @@ services:
         - "traefik.http.routers.{{cookiecutter.project_name}}-staging.entrypoints=websecure"
         - "traefik.http.routers.{{cookiecutter.project_name}}-staging.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.{{cookiecutter.project_name}}-staging.loadbalancer.server.port=8000"
-
+  {% if cookiecutter.use_celery %}
   {{cookiecutter.project_name}}-celery:
     image: reg.bernetco.ir/{{cookiecutter.project_name}}:staging
     command: celery -A {{cookiecutter.project_name}}.celery worker -l info --pidfile="celeryworker.pid"
@@ -131,3 +146,143 @@ services:
     depends_on:
       - {{cookiecutter.project_name}}-db
       - {{cookiecutter.project_name}}-redis
+  {% endif %}
+
+{% if cookiecutter.use_elastic %}
+
+#elk
+  {{cookicutter.project_name}}-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    volumes:
+      - elk-elastic-data.vol:/usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD_STG}
+      discovery.type: single-node
+      network.publish_host: _eth0_
+      cluster.name: bernet-cluster
+      network.host: "0.0.0.0"
+      xpack.security.enabled: "true"
+      xpack.monitoring.collection.enabled: "true"
+    networks:
+      - {{cookicutter.project_name}}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.id == 3flggcl00wjymw2y50zsgznat
+
+  {{cookicutter.project_name}}-logstash:
+    image: docker.elastic.co/logstash/logstash:7.14.1
+    ports:
+      - 12206:12201/udp
+    configs:
+      - source: logstash_config
+        target: /usr/share/logstash/config/logstash.yml
+      - source: logstash_pipeline
+        target: /usr/share/logstash/pipeline/logstash.conf
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD_STG}
+    networks:
+      - {{cookicutter.project_name}}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.id == 3flggcl00wjymw2y50zsgznat
+
+  {{cookicutter.project_name}}-kibana-stg:
+    image: docker.elastic.co/kibana/kibana:7.14.1
+    environment:
+      SERVER_NAME: "kibana"
+      SERVER_HOST: "0.0.0.0"
+      ELASTICSEARCH_HOSTS: '["http://{{cookicutter.project_name}}-elasticsearch:9200"]'
+      MONITORING_ENABLED: "true"
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "${ELASTIC_PASSWORD_STG}"
+    networks:
+      - {{cookicutter.project_name}}
+      - traefik-public
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.{{cookicutter.project_name}}-kibana.rule=Host(`{{cookicutter.project_name}}.kibana.bernetco.ir`)"
+        - "traefik.http.routers.{{cookicutter.project_name}}-kibana.entrypoints=websecure"
+        - "traefik.http.routers.{{cookicutter.project_name}}-kibana.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.{{cookicutter.project_name}}-kibana.loadbalancer.server.port=5601"
+      placement:
+        constraints:
+          - node.id == 3flggcl00wjymw2y50zsgznat
+
+  {{cookicutter.project_name}}-apm-serve-stg:
+    image: docker.elastic.co/apm/apm-server:7.14.1
+    command: >
+      apm-server --strict.perms=false -e
+         -E  apm-server.host=0.0.0.0:8200
+         -E  apm-server.secret_token=${APM_SERVER_SECRET_TOKEN}
+         -E  output.elasticsearch.hosts=[""http://{{cookicutter.project_name}}-elasticsearch:9200""]
+         -E  output.elasticsearch.username=elastic
+         -E  output.elasticsearch.password=${ELASTIC_PASSWORD_STG}
+         -E  setup.template.settings.index.number_of_replicas=0
+         -E  apm-server.kibana.enabled=true  
+         -E  apm-server.kibana.host=bernet-kibana-stg:5601
+    networks:
+      - {{cookicutter.project_name}}
+    depends_on:
+      - {{cookicutter.project_name}}-elasticsearch
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+      mode: replicated
+      placement:
+        constraints:
+          - node.id == 3flggcl00wjymw2y50zsgznat
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.13.3
+    command: ["--strict.perms=false"]
+    depends_on:
+      - {{cookicutter.project_name}}-elasticsearch
+      - {{cookicutter.project_name}}-apm-serve
+    environment:
+      - ELASTICSEARCH_HOST={{cookicutter.project_name}}-elasticsearch
+      - KIBANA_HOST={{cookicutter.project_name}}-kibana
+    volumes:
+        - /var/lib/docker/containers:/var/lib/docker/containers:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: filebeat_config
+        target: /usr/share/filebeat/filebeat.yml
+    user: root
+    deploy:
+      resources:
+        limits:
+          cpus: '.5'
+          memory: 256M
+      replicas: 1
+      placement:
+        constraints:
+          - node.id == 3flggcl00wjymw2y50zsgznat
+    networks:
+      - {{cookicutter.project_name}}
+
+{% endif %}
