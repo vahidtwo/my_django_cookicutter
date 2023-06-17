@@ -331,7 +331,7 @@ elif SERVE_STRATEGY == "production":
         "propagate": False,
     }
     MIDDLEWARE.append("elasticapm.contrib.django.middleware.TracingMiddleware")
-    { % endif %}
+    {% endif %}
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
     LOGGING["disable_existing_loggers"] = True
