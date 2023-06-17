@@ -25,7 +25,6 @@ from {{cookiecutter.project_name}}.swagger import schema_view
 urlpatterns = [
     path("adm/", admin.site.urls),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0)),
-    path("", include("apps.urls.web")),
     path("api/v1/", include("apps.urls.api")),
     path("i18n/", include("django.conf.urls.i18n")),
 ]
@@ -35,4 +34,3 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if os.environ.get("DJANGO_SETTINGS_MODULE") == "{{cookiecutter.project_name}}.local":
     urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
-handler404 = "apps.web.views.notfound_view"
