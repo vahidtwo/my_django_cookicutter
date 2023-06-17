@@ -145,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "bernet.wsgi.application"
+WSGI_APPLICATION = "{{cookiecutter.project_name}}.wsgi.application"
 
 
 # Database
@@ -311,7 +311,7 @@ elif SERVE_STRATEGY == "production":
     INSTALLED_APPS.append("elasticapm.contrib.django")
     INSTALLED_APPS.append("django_elasticsearch_dsl")
     ELASTIC_APM = {
-        "SERVICE_NAME": "dashboard-v2-django",
+        "SERVICE_NAME": "{{cookiecutter.project_name}}-django",
         "SECRET_TOKEN": env("APM_SERVER_TOKEN"),
         "SERVER_URL": env("APM_SERVER_URL"),
         "DEBUG": "True",
