@@ -63,7 +63,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    {% if cookiecutter.use_simple_history %}
+    {% if cookiecutter.use_simple_history_package %}
     "simple_history.middleware.HistoryRequestMiddleware",
     {% endif %}
 ]
