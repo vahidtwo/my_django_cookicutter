@@ -7,6 +7,7 @@ django-jalali-date==1.0.2
 django-jazzmin==2.6.0
 django-lifecycle==1.0.0
 djangorestframework==3.14.0
+django-cors-headers==4.1.0
 drf-yasg==1.21.6
 {% if cookiecutter.use_elastic %}
 elastic-apm==6.16.2
@@ -18,4 +19,7 @@ celery==5.3.0
 {% endif %}
 {% if cookiecutter.use_kavenegar %}
 kavenegar==1.1.2
+{% endif %}
+{% if cookiecutter.use_simple_history_package %}
+django-simple-history==3.3.0
 {% endif %}
