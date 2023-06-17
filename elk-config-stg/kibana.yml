@@ -4,7 +4,7 @@
 #
 server.name: kibana
 server.host: 0.0.0.0
-elasticsearch.hosts: [ "http://{{cookicutter.project_name}}:9200" ]
+elasticsearch.hosts: [ "http://{{cookiecutter.project_name}}:9200" ]
 monitoring.ui.container.elasticsearch.enabled: true
 
 ## X-Pack security credentials

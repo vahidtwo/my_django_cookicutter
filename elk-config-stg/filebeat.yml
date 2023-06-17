@@ -1,10 +1,10 @@
 setup.kibana.host: bernet-kibana-stg:5601
 
 setup.ilm.enabled: false
-setup.template.name: "{{cookicutter.project_name}}"
-setup.template.pattern: "{{cookicutter.project_name}}"
-index: "{{cookicutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
-output.elasticsearch.index: "{{cookicutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
+setup.template.name: "{{cookiecutter.project_name}}"
+setup.template.pattern: "{{cookiecutter.project_name}}"
+index: "{{cookiecutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
+output.elasticsearch.index: "{{cookiecutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
 
 
 filebeat.autodiscover:
@@ -16,7 +16,7 @@ filebeat.autodiscover:
       templates:
         - condition:
             contains:
-              docker.container.image: {{cookicutter.project_name}}:staging
+              docker.container.image: {{cookiecutter.project_name}}:staging
           config:
             - type: container
               paths:
@@ -31,7 +31,7 @@ processors:
     target: "json"
     overwrite_keys: true
 
-output.elasticsearch.hosts: ["http://{{cookicutter.project_name}}:9200"]
+output.elasticsearch.hosts: ["http://{{cookiecutter.project_name}}:9200"]
 output.elasticsearch.username: elastic
 output.elasticsearch.password: AIwnsm_102_WQPac0
 
