@@ -7,7 +7,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="{{ cookiecutter.project_name}} API",
         default_version="v1",
-        description="{{ cookiecutter.project_slug apis",
+        description="{{ cookiecutter.project_name}} apis",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),
     ),
