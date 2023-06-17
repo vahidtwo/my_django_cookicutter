@@ -9,6 +9,7 @@ django-lifecycle==1.0.0
 djangorestframework==3.14.0
 django-cors-headers==4.1.0
 drf-yasg==1.21.6
+psycopg2==2.9.6
 {% if cookiecutter.use_elastic %}
 elastic-apm==6.16.2
 django-elasticsearch-dsl==7.3
