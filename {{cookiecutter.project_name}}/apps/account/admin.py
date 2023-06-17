@@ -15,14 +15,12 @@ admin.site.unregister(TokenProxy)
 
 class UserChangeForm(DjangoUserChangeForm):
     class Meta(DjangoUserChangeForm.Meta):
-        field_classes = {"phone_number": UsernameField}
-
+        pass
 
 class UserCreationForm(DjangoUserCreationForm):
     class Meta(DjangoUserCreationForm.Meta):
         fields = ("email",)
 
-        field_classes = {"phone_number": UsernameField}
 
 
 @admin.register(models.User)
@@ -32,7 +30,7 @@ class UserAdmin(UserAdmin, BaseAdmin):
     change_password_form = AdminPasswordChangeForm
     list_display = ("id", "full_name", "email", "is_staff")
     search_fields = ("email",)
-    list_filter = ("role__title", "first_name", "last_name")
+    list_filter = ("first_name", "last_name")
     ordering = ("email",)
     filter_horizontal = tuple()
     fieldsets = (
