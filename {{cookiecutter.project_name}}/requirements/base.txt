@@ -12,3 +12,4 @@ drf-yasg==1.21.6
 elastic-apm==6.16.2
 elasticsearch==7.17.9
 elasticsearch-dsl==7.4.1
+Faker==18.10.1
