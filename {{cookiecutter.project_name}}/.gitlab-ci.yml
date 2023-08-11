@@ -15,8 +15,8 @@ build-stag:
   stage: buildStage
   script:
     - mv staticfiles/staging.robots.txt staticfiles/robots.txt
-    - docker build . -t {{registry_address}}/{{cookiecutter.project_name}}:staging
-    - docker push {{registry_address}}/{{cookiecutter.project_name}}:staging
+    - docker build . -t {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}:staging
+    - docker push {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}:staging
 
   only:
     - staging
@@ -40,8 +40,8 @@ build-prod-stag:
   stage: buildProd
   script:
     - mv staticfiles/prod.robots.txt staticfiles/robots.txt
-    - docker build . -t {{registry_address}}/{{cookiecutter.project_name}}
-    - docker push {{registry_address}}/{{cookiecutter.project_name}}
+    - docker build . -t {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}
+    - docker push {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}
 
   only:
     - main

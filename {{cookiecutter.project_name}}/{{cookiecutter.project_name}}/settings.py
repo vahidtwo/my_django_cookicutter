@@ -292,7 +292,7 @@ EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-SERVER_EMAIL = "noreply@{{domain}}"
+SERVER_EMAIL = "noreply@{{cookiecutter.domain}}"
 
 SERVE_STRATEGY = env("SERVE_STRATEGY", default="local")
 
@@ -371,7 +371,7 @@ JAZZMIN_SETTINGS = {
     "site_logo": "images/favicon.png",
     "site_logo_classes": "img-circle",
     "welcome_sign": "Welcome to the {{cookiecutter.project_name}} Admin",
-    "copyright": "{{domain}}",
+    "copyright": "{{cookiecutter.domain}}",
     "search_model": ["account.User"],
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},

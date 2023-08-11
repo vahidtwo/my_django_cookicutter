@@ -46,7 +46,7 @@ services:
 
 
   {{cookiecutter.project_name}}:
-    image: {{registry_address}}/{{cookiecutter.project_name}}:latest
+    image: {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}:latest
     sysctls:
       net.core.somaxconn: 1024
     volumes:
@@ -84,13 +84,13 @@ services:
         order: start-first
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.{{cookiecutter.project_name}}.rule=Host(`{{cookiecutter.project_name}}.{{domain}}`)"
+        - "traefik.http.routers.{{cookiecutter.project_name}}.rule=Host(`{{cookiecutter.project_name}}.{{cookiecutter.domain}}`)"
         - "traefik.http.routers.{{cookiecutter.project_name}}.entrypoints=websecure"
         - "traefik.http.routers.{{cookiecutter.project_name}}.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.{{cookiecutter.project_name}}.loadbalancer.server.port=8000"
   {% if cookiecutter.use_celery %}
   {{cookiecutter.project_name}}-celery:
-    image: {{registry_address}}/{{cookiecutter.project_name}}:latest
+    image: {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}:latest
     command: celery -A {{cookiecutter.project_name}}.celery worker -l info --pidfile="celeryworker.pid"
     environment:
       - DEBUG=on
@@ -117,7 +117,7 @@ services:
       - {{cookiecutter.project_name}}-redis
 
   {{cookiecutter.project_name}}-beat:
-    image: {{registry_address}}/{{cookiecutter.project_name}}:latest
+    image: {{cookiecutter.registry_address}}/{{cookiecutter.project_name}}:latest
     command: celery -A {{cookiecutter.project_name}}.celery beat -l info
     environment:
       - DEBUG=on
@@ -220,7 +220,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.{{cookiecutter.project_name}}-kibana.rule=Host(`{{cookiecutter.project_name}}.kibana.{{domain}}`)"
+        - "traefik.http.routers.{{cookiecutter.project_name}}-kibana.rule=Host(`{{cookiecutter.project_name}}.kibana.{{cookiecutter.domain}}`)"
         - "traefik.http.routers.{{cookiecutter.project_name}}-kibana.entrypoints=websecure"
         - "traefik.http.routers.{{cookiecutter.project_name}}-kibana.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.{{cookiecutter.project_name}}-kibana.loadbalancer.server.port=5601"
