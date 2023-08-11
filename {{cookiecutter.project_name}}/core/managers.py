@@ -18,24 +18,22 @@ class UserManager(BaseUserManager):
     qs_class = QuerySet
     use_in_migrations = True
 
-    def _create_user(self, phone_number, email, password, **extra_fields):
+    def _create_user(self, email, password, **extra_fields):
         """
         Create and save a user with the given phone_number, email, and password.
         """
-        if not phone_number:
-            raise ValueError("The given phone_number must be set")
         email = self.normalize_email(email)
-        user = self.model(phone_number=phone_number, email=email, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, phone_number, email=None, password=None, **extra_fields):
+    def create_user(self,  email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create_user(phone_number, email, password, **extra_fields)
+        return self._create_user( email, password, **extra_fields)
 
-    def create_superuser(self, phone_number, email, password, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -44,7 +42,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(phone_number, email, password, **extra_fields)
+        return self._create_user(email, password, **extra_fields)
 
     def get_restore_or_create(self, *args, **kwargs):
         return self.get_queryset().get_restore_or_create(*args, **kwargs)

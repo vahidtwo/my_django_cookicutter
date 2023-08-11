@@ -7,11 +7,10 @@
   "email": "test@test.com",
   "postgres_user": "user",
   "postgres_password": "password",
-
+  "use_elastic": "y",
+  "use_celery": "y",
+  "use_kavenegar": "y",
+  "use_simple_history_package": "y",
   "_copy_without_render": [
-        "markdown_tools/*",
-        "frontend/src/**/*.vue",
-        "frontend/node_modules/*",
-        "backend/app/app/email-templates/**"
     ]
 }

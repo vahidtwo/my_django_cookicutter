@@ -15,8 +15,8 @@ build-stag:
   stage: buildStage
   script:
     - mv staticfiles/staging.robots.txt staticfiles/robots.txt
-    - docker build . -t reg.bernetco.ir/{{cookiecutter.project_name}}:staging
-    - docker push reg.bernetco.ir/{{cookiecutter.project_name}}:staging
+    - docker build . -t {{registry_address}}/{{cookiecutter.project_name}}:staging
+    - docker push {{registry_address}}/{{cookiecutter.project_name}}:staging
 
   only:
     - staging
@@ -40,8 +40,8 @@ build-prod-stag:
   stage: buildProd
   script:
     - mv staticfiles/prod.robots.txt staticfiles/robots.txt
-    - docker build . -t reg.bernetco.ir/{{cookiecutter.project_name}}
-    - docker push reg.bernetco.ir/{{cookiecutter.project_name}}
+    - docker build . -t {{registry_address}}/{{cookiecutter.project_name}}
+    - docker push {{registry_address}}/{{cookiecutter.project_name}}
 
   only:
     - main
@@ -54,8 +54,6 @@ deploy-prod-stag:
     - curl -s --header "$GITLAB_TOKEN" "${MY_GITLAB}/projects/${CI_PROJECT_ID}/members/all" | jq '.[]|.id'>.members 
     - curl -s --header "$GITLAB_TOKEN" "${MY_GITLAB}/projects/224/members/all" | jq '.[]|.id' >.exceptions  
     - for i in $(cat .members|grep -vwf .exceptions); do curl -s --header "$GITLAB_TOKEN" "${MY_GITLAB}/users/$i"|jq .email;done > .list 
-    - export CCREMAILS=$( cat .list | tr -d \" | tr '\n' ',' )
-    - echo $CCREMAILS
     - docker stack deploy -c docker-compose.yml --with-registry-auth {{cookiecutter.project_name}}
 
   only:

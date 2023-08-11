@@ -1,2 +1,2 @@
-from .base import BaseModel, AnalyticsBaseModel
+from .base import BaseModel
 from .user import AbstractUser

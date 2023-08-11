@@ -1,0 +1,41 @@
+setup.kibana.host: bernet-kibana-stg:5601
+
+setup.ilm.enabled: false
+setup.template.name: "{{cookiecutter.project_name}}"
+setup.template.pattern: "{{cookiecutter.project_name}}"
+index: "{{cookiecutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
+output.elasticsearch.index: "{{cookiecutter.project_name}}-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      labels.dedot: true
+      json.keys_under_root: true
+      json.add_error_key: false
+      templates:
+        - condition:
+            contains:
+              docker.container.image: {{cookiecutter.project_name}}:staging
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              #include_lines: ['info']           
+
+processors:
+- add_docker_metadata: ~
+
+- decode_json_fields:
+    fields: ["message"]
+    target: "json"
+    overwrite_keys: true
+
+output.elasticsearch.hosts: ["http://{{cookiecutter.project_name}}:9200"]
+output.elasticsearch.username: elastic
+output.elasticsearch.password: AIwnsm_102_WQPac0
+
+logging.level: error
+logging.json: true
+logging.metrics.enabled: false
+

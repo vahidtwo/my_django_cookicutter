@@ -63,7 +63,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    {% if cookiecutter.use_simple_history_package %}
     "simple_history.middleware.HistoryRequestMiddleware",
+    {% endif %}
 ]
 
 PYPI_MODULES = [
@@ -84,15 +86,17 @@ INSTALLED_APPS = [
     *APP_MODULES,
 ]
 
-
+{% if cookiecutter.use_elastic %}
 ELASTICSEARCH_DSL = {
     "default": {"hosts": env("ELASTIC_HOST")},
 }
+{% endif %}
 
 CHARGE_BALANCE_REMINDER_ENOUGH_DAYS = 10
-
+{% if cookiecutter.use_celery %}
 CELERY_BEAT_SCHEDULE = {
 }
+{% endif %}
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
@@ -141,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "bernet.wsgi.application"
+WSGI_APPLICATION = "{{cookiecutter.project_name}}.wsgi.application"
 
 
 # Database
@@ -238,14 +242,19 @@ CKEDITOR_CONFIGS = {
         "toolbar": "full",
     },
 }
+{% if cookiecutter.use_kavenegar %}
 KAVENEGAR_AUTH_TOKEN = env("KAVENEGAR_AUTH_TOKEN")
 KAVENEGAR_SENDER_LINE = "10008663"
+{% endif %}
 
 # celery Conf
+{% if cookiecutter.use_celery %}
 CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}/2"
 CELERY_RESULT_BACKEND = f"redis://{env('REDIS_HOST')}"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+{% endif %}
+
 
 
 # swagger Conf
@@ -278,47 +287,38 @@ COMPRESS_ENABLED = True
 THUMBNAIL_COLORSPACE = None
 THUMBNAIL_PRESERVE_FORMAT = True
 
-
-GOOGLE_ANALYTICS_KEY = "G-WDRHG7Y1T3"
-
-GEOAPI_BASE_API = env("GEOAPI_BASE_API")
-
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-SERVER_EMAIL = "noreply@bernetco.ir"
+SERVER_EMAIL = "noreply@{{domain}}"
 
 SERVE_STRATEGY = env("SERVE_STRATEGY", default="local")
 
 if SERVE_STRATEGY == "local":
     DEBUG = True
     # ELASTIC_APM_DISABLE_SEND = True
+    {% if cookiecutter.use_elastic %}
     INSTALLED_APPS.append("django_elasticsearch_dsl")
+    {% endif %}
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
     INSTALLED_APPS.append("drf_generators")
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 elif SERVE_STRATEGY == "production":
+    {% if cookiecutter.use_elastic %}
     INSTALLED_APPS.append("elasticapm.contrib.django")
     INSTALLED_APPS.append("django_elasticsearch_dsl")
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     ELASTIC_APM = {
-        "SERVICE_NAME": "dashboard-v2-django",
+        "SERVICE_NAME": "{{cookiecutter.project_name}}-django",
         "SECRET_TOKEN": env("APM_SERVER_TOKEN"),
         "SERVER_URL": env("APM_SERVER_URL"),
         "DEBUG": "True",
     }
-    LOGGING["disable_existing_loggers"] = True
     LOGGING["handlers"]["elasticapm"] = {
         "level": "WARNING",
         "class": "elasticapm.contrib.django.handlers.LoggingHandler",
-    }
-    LOGGING["loggers"]["django.request"] = {
-        "handlers": ["mail_admins"],
-        "level": "ERROR",
-        "propagate": False,
     }
     LOGGING["loggers"]["elasticapm.errors"] = {
         "level": "ERROR",
@@ -331,6 +331,15 @@ elif SERVE_STRATEGY == "production":
         "propagate": False,
     }
     MIDDLEWARE.append("elasticapm.contrib.django.middleware.TracingMiddleware")
+    {% endif %}
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+    LOGGING["disable_existing_loggers"] = True
+    LOGGING["loggers"]["django.request"] = {
+        "handlers": ["mail_admins"],
+        "level": "ERROR",
+        "propagate": False,
+    }
 else:  # test
     DEBUG = False
 
@@ -340,11 +349,14 @@ else:  # test
             "NAME": "db.sqlite3",
         }
     }
-
+    {% if cookiecutter.use_elastic %}
     ELASTIC_APM_DISABLE_SEND = True
+    {% endif %}
+    {% if cookiecutter.use_celery %}
     CELERY_BROKER_BACKEND = "memory"
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
+    {% endif %}
     PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
     CACHES = {
         "default": {
@@ -359,7 +371,7 @@ JAZZMIN_SETTINGS = {
     "site_logo": "images/favicon.png",
     "site_logo_classes": "img-circle",
     "welcome_sign": "Welcome to the {{cookiecutter.project_name}} Admin",
-    "copyright": "Bernetco.ir",
+    "copyright": "{{domain}}",
     "search_model": ["account.User"],
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
