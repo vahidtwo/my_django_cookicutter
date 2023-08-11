@@ -5,6 +5,8 @@
   "first_name":"author",
   "last_name":"author lastname",
   "email": "test@test.com",
+  "domain": "example.com",
+  "registry_address": "reg.example.com",
   "postgres_user": "user",
   "postgres_password": "password",
   "use_elastic": "y",
